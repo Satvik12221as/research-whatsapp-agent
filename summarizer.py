@@ -5,7 +5,7 @@ import sqlite3
 from datetime import datetime, timedelta
 from fetcher import get_todays_articles, mark_used
 
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "YOUR_API_KEY_HERE")
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "YOUR_API_KEY_HERE")
 
 CATEGORIES = [
     "AI & Big Tech",
@@ -23,21 +23,21 @@ CATEGORY_CONTEXT = {
     "Major Economy Events": "Focus ONLY on major events: Fed/RBI interest rate decisions, stock market crashes or rallies >2%, major trade wars, recession signals, and global financial crises.",
 }
 
-def call_claude(prompt):
+def call_groq(prompt):
     response = requests.post(
-        "https://api.anthropic.com/v1/messages",
+        "https://api.groq.com/openai/v1/chat/completions",
         headers={
-            "x-api-key": ANTHROPIC_API_KEY,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
+            "Authorization": f"Bearer {GROQ_API_KEY}",
+            "Content-Type": "application/json",
         },
         json={
-            "model": "claude-sonnet-4-20250514",
-            "max_tokens": 4000,
+            "model": "llama-3.3-70b-versatile",
             "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.3,
+            "response_format": {"type": "json_object"}
         },
     )
-    return response.json()["content"][0]["text"]
+    return response.json()["choices"][0]["message"]["content"]
 
 def pick_and_summarize(category, articles):
     """Given raw articles for a category, pick top 5 and summarize each."""
@@ -77,7 +77,7 @@ Return ONLY valid JSON in this exact format, nothing else:
 If fewer than 5 good stories exist, return what's available. Never make up stories."""
 
     try:
-        result = call_claude(prompt)
+        result = call_groq(prompt)
         # Clean up response
         result = result.strip()
         if result.startswith("```"):
@@ -87,7 +87,7 @@ If fewer than 5 good stories exist, return what's available. Never make up stori
         stories = json.loads(result)
         return stories[:5]
     except Exception as e:
-        print(f"  ⚠️  Claude error for {category}: {e}")
+        print(f"  ⚠️  Groq error for {category}: {e}")
         return []
 
 def build_digest():

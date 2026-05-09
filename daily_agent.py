@@ -55,7 +55,7 @@ def wait_until(target):
 def validate_delivery_config():
     missing = [
         name
-        for name in ("ANTHROPIC_API_KEY", "WHATSAPP_PHONE", "CALLMEBOT_APIKEY")
+        for name in ("GROQ_API_KEY", "WHATSAPP_PHONE", "CALLMEBOT_APIKEY")
         if not os.environ.get(name)
         or os.environ.get(name) in {"YOUR_API_KEY_HERE", "+91XXXXXXXXXX", "YOUR_CALLMEBOT_KEY"}
     ]
