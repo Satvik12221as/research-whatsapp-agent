@@ -1,4 +1,4 @@
-#check
+#check_setup.py
 import importlib.util
 import os
 from pathlib import Path
