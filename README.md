@@ -85,10 +85,24 @@ notepad .env
 Fill these values:
 
 ```text
-ANTHROPIC_API_KEY=...
+GROQ_API_KEY=...
 WHATSAPP_PHONE=+91...
 CALLMEBOT_APIKEY=...
 ```
+
+To get the CallMeBot API key, use the currently active WhatsApp setup page:
+
+```text
+https://www.callmebot.com/?ae_global_templates=setup-whatsapp
+```
+
+Add the listed bot number to WhatsApp contacts and send this exact message:
+
+```text
+I allow callmebot to send me messages
+```
+
+If the bot does not reply with an API key in 2 minutes, CallMeBot says to try again after 24 hours.
 
 If your system does not have Python on PATH, create a fresh virtual environment:
 
@@ -222,7 +236,7 @@ If your PC is off, Windows Task Scheduler cannot run the agent. The workflow mus
 This project now has a Codex cloud automation configured to start daily at 10:00 PM. For it to send WhatsApp successfully, the cloud run must have access to:
 
 ```text
-ANTHROPIC_API_KEY
+GROQ_API_KEY
 WHATSAPP_PHONE
 CALLMEBOT_APIKEY
 ```

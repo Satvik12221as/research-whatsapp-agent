@@ -55,15 +55,24 @@ def wait_until(target):
 def validate_delivery_config():
     missing = [
         name
-        for name in ("GROQ_API_KEY", "WHATSAPP_PHONE", "CALLMEBOT_APIKEY")
+        for name in ("WHATSAPP_PHONE", "CALLMEBOT_APIKEY")
         if not os.environ.get(name)
-        or os.environ.get(name) in {"YOUR_API_KEY_HERE", "+91XXXXXXXXXX", "YOUR_CALLMEBOT_KEY"}
+        or os.environ.get(name) in {"+91XXXXXXXXXX", "YOUR_CALLMEBOT_KEY", "your-callmebot-key-here"}
     ]
     if missing:
         raise RuntimeError(
             "Missing configuration: "
             + ", ".join(missing)
             + ". Add these values to .env or system environment variables."
+        )
+
+
+def validate_digest_config():
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key or api_key in {"YOUR_API_KEY_HERE", "your-groq-key-here"}:
+        raise RuntimeError(
+            "Missing configuration: GROQ_API_KEY. "
+            "Add it to .env or the GitHub Actions repository secrets."
         )
 
 
@@ -85,6 +94,7 @@ def send_digest(dry_run=False):
     from sender import send_whatsapp
     from summarizer import build_digest, format_whatsapp_message
 
+    validate_digest_config()
     log("Digest build started.")
     digest = build_digest()
     if not digest:
@@ -108,6 +118,9 @@ def send_digest(dry_run=False):
 def run_daily(args):
     load_env_file()
     log("Daily agent started.")
+    validate_digest_config()
+    if not args.dry_run:
+        validate_delivery_config()
     run_research(args)
 
     send_time = parse_time_today(args.send_time)

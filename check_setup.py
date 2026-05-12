@@ -8,6 +8,14 @@ from fetcher import DB_PATH
 
 
 PROJECT_DIR = Path(__file__).resolve().parent
+REQUIRED_SECRETS = ("GROQ_API_KEY", "WHATSAPP_PHONE", "CALLMEBOT_APIKEY")
+PLACEHOLDER_VALUES = {
+    "YOUR_API_KEY_HERE",
+    "your-groq-key-here",
+    "+91XXXXXXXXXX",
+    "YOUR_CALLMEBOT_KEY",
+    "your-callmebot-key-here",
+}
 
 
 def check_dependency(name):
@@ -37,13 +45,13 @@ def main():
 
     print()
     print("Secrets")
-    for key in ("ANTHROPIC_API_KEY", "WHATSAPP_PHONE", "CALLMEBOT_APIKEY"):
+    for key in REQUIRED_SECRETS:
         print(f"- {key}: {masked(os.environ.get(key))}")
 
     missing_secrets = [
         key
-        for key in ("ANTHROPIC_API_KEY", "WHATSAPP_PHONE", "CALLMEBOT_APIKEY")
-        if not os.environ.get(key)
+        for key in REQUIRED_SECRETS
+        if not os.environ.get(key) or os.environ.get(key) in PLACEHOLDER_VALUES
     ]
     missing_deps = [
         package for package in ("feedparser", "requests") if not check_dependency(package)
