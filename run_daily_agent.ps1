@@ -70,3 +70,6 @@ else {
 $ExitCode = $LASTEXITCODE
 "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] Daily agent exited with code $ExitCode" | Tee-Object -FilePath $LogFile -Append
 exit $ExitCode
+
+
+# completed
